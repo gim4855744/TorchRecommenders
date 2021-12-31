@@ -8,4 +8,4 @@ Source codes of implemented models are easy to understand and modify.
 
 Model list
 - MF
-  - Matrix Factorization
+  - Matrix Factorization (MF) is a collaborative filtering model that learns second-order feature interactions (e.g., user-item interactions). 
