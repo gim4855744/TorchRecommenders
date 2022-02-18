@@ -1,8 +1,9 @@
 import torch
 
 from torch.nn import Module, ModuleList
-from torch.nn import Embedding
-from torch.nn.init import uniform_
+from torch.nn import Parameter
+from torch.nn import Embedding, Linear
+from torch.nn.init import zeros_, uniform_
 
 
 class MF(Module):
@@ -53,5 +54,33 @@ class TF(Module):
         for embedding in embeddings[1:]:
             predicts = predicts * embedding
         predicts = predicts.sum(dim=1, keepdim=True)
+
+        return predicts
+
+
+class FM(Module):
+
+    def __init__(self, num_features, emb_size):
+
+        super(FM, self).__init__()
+
+        self._embeddings = ModuleList([Linear(1, emb_size, bias=False) for _ in range(num_features)])
+        self._bias = Parameter(torch.Tensor(1))
+
+    def reset_parameters(self):
+        for embedding in self._embeddings:
+            uniform_(embedding.weight, -1e-4, 1e-4)
+        zeros_(self._bias)
+
+    def forward(self, features):
+
+        embeddings = []
+        for i, embedding in enumerate(self._embeddings):
+            embeddings.append(embedding(features[:, i].view(-1, 1)))
+        embeddings = torch.stack(embeddings, dim=1)
+
+        sum_square = embeddings.sum(dim=1).pow(2)
+        square_sum = embeddings.pow(2).sum(dim=1)
+        predicts = (sum_square - square_sum).sum(dim=1, keepdim=True)
 
         return predicts
