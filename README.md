@@ -6,4 +6,4 @@ Model list
 - Matrix Factorization (MF) 
 - Tensor Factorization (TF) 
 - Factorization Machine (FM)
-    - [https://doi.org/10.1109/ICDM.2010.127](Factorization Machines, Steffen Rendle)
+    - [Factorization Machines, Steffen Rendle](https://doi.org/10.1109/ICDM.2010.127)
