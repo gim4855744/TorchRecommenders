@@ -6,6 +6,23 @@ from torch.nn import Embedding, Linear
 from torch.nn.init import zeros_, uniform_
 
 
+class LR(Module):
+
+    def __init__(self, num_features):
+
+        super(LR, self).__init__()
+
+        self._output_layer = Linear(num_features, 1)
+
+    def reset_parameters(self):
+        uniform_(self._output_layer.weight)
+        zeros_(self._output_layer.bias)
+
+    def forward(self, features):
+        predicts = self._output_layer(features)
+        return predicts
+
+
 class MF(Module):
 
     def __init__(self, num_embeddings1, num_embeddings2, embedding_size):
