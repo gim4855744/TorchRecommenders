@@ -3,6 +3,7 @@
 This repository aims to provide simple implementations of recommender systems with PyTorch.
 
 Model list
+- Linear/Logistic Regression (LR)
 - Matrix Factorization (MF) 
 - Tensor Factorization (TF) 
 - Factorization Machine (FM)
