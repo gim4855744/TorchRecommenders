@@ -14,8 +14,10 @@ class LR(Module):
 
         self._output_layer = Linear(num_features, 1)
 
+        self.reset_parameters()
+
     def reset_parameters(self):
-        uniform_(self._output_layer.weight)
+        uniform_(self._output_layer.weight, -1e-4, 1e-4)
         zeros_(self._output_layer.bias)
 
     def forward(self, features):
@@ -84,6 +86,8 @@ class FM(Module):
         self._embeddings = ModuleList([Linear(1, emb_size, bias=False) for _ in range(num_features)])
         self._bias = Parameter(torch.Tensor(1))
 
+        self.reset_parameters()
+
     def reset_parameters(self):
         for embedding in self._embeddings:
             uniform_(embedding.weight, -1e-4, 1e-4)
@@ -99,5 +103,39 @@ class FM(Module):
         sum_square = embeddings.sum(dim=1).pow(2)
         square_sum = embeddings.pow(2).sum(dim=1)
         predicts = (sum_square - square_sum).sum(dim=1, keepdim=True)
+
+        return predicts
+
+
+class MLP(Module):
+
+    def __init__(self, num_features):
+
+        super(MLP, self).__init__()
+
+        num_layers = 3
+        units = 64
+
+        self._input_layer = Linear(num_features, units)
+        self._layers = ModuleList([Linear(units, units) for _ in range(num_layers - 1)])
+        self._output_layer = Linear(units, 1)
+
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        uniform_(self._input_layer.weight, -1e-4, 1e-4)
+        zeros_(self._input_layer.bias)
+        for layer in self._layers:
+            uniform_(layer.weight, -1e-4, 1e-4)
+            zeros_(layer.bias)
+        uniform_(self._output_layer.weight, -1e-4, 1e-4)
+        zeros_(self._output_layer.bias)
+
+    def forward(self, features):
+
+        predicts = self._input_layer(features)
+        for layer in self._layers:
+            predicts = layer(predicts)
+        predicts = self._output_layer(predicts)
 
         return predicts
