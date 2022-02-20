@@ -3,6 +3,7 @@ import torch
 from torch.nn import Module, ModuleList
 from torch.nn import Parameter
 from torch.nn import Embedding, Linear
+from torch.nn import functional
 from torch.nn.init import zeros_, uniform_
 
 
@@ -133,9 +134,9 @@ class MLP(Module):
 
     def forward(self, features):
 
-        predicts = self._input_layer(features)
+        predicts = functional.relu(self._input_layer(features))
         for layer in self._layers:
-            predicts = layer(predicts)
+            predicts = functional.relu(layer(predicts))
         predicts = self._output_layer(predicts)
 
         return predicts
